@@ -1,0 +1,7 @@
+{
+	"target" : "https://api-sandbox.paydock.com/v1/charges",
+	"SecKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
+	"gateway_id" : "5968624efbe70f15089b4cda",
+	"serverport": "8080",
+	"homepage": "./form.html"
+}

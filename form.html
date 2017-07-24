@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        iframe {
+            border: 0;
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+	<form action="" method="post" enctype="application/x-www-form-urlencoded">
+
+		<input type="radio" name="amount" value="50"> $50<br>
+		<input type="radio" name="amount" value="100"> $100<br>
+		<input type="radio" name="amount" value="150"> $150<br>
+
+		<select name="currency">
+			<option value="AUD">Australian Dollars</option>
+			<option value="USD">American Dollars</option>
+			<option value="GBP">British Pounds</option>
+		</select>
+
+		<input type="hidden" name="ps" />
+		<input type="submit" value="Submit">
+
+	</form> 
+
+	<div id="widget"></div>
+	
+	<script src="https://app-sandbox.paydock.com/v1/widget.umd.js" ></script>
+	<script>
+		var widget = new paydock.HtmlWidget('#widget', 'b37753781812ce5dbf569029a748115506ba6219', '5968624efbe70f15089b4cda');
+		widget.onFinishInsert('[name="ps"]', 'payment_source');
+		widget.load();
+	</script>
+</body>
+</html>
