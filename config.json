@@ -2,9 +2,33 @@
 	"target" : "https://api-sandbox.paydock.com/v1/charges",
 	"SecretKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
 	"PublicKey" : "b37753781812ce5dbf569029a748115506ba6219",
-	"gateway_id" : ["", "",
-					"5968624efbe70f15089b4cda", 
-					""],
 	"serverport": "8080",
-	"homepage": "/form.html"
+	"homepage": "/form.html",
+
+	"gateway_config" : [
+		"DO_NOT_CHANGE_THIS",
+		{
+			"payment_type" : "card",
+			"gateway_id" : "5968624efbe70f15089b4cda",
+			"form_fields" : [
+				"email"
+			]
+		},		
+		{
+			"payment_type" : "bank_account",
+			"gateway_id" : "596d58668447ab5aba4bf967",
+			"form_fields" : ["account_name",
+				"account_routing",
+				"account_holder_type",
+				"account_bank_name"
+			]
+		},		
+		{
+			"payment_type" : "checkout",
+			"gateway_id" : "5976c7be37cce574c8d0215c",
+			"form_fields" : [
+				""
+			]
+		}
+	]
 }
