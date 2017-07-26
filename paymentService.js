@@ -8,7 +8,7 @@ function acceptPost (req, res) {
 		incomingBody += data;							//the incoming message is processed for raw data
 	});
 	req.on('end', function(){
-
+		console.log(incomingBody);
 		var parsedBody = qs.parse(incomingBody);		//the data is then parsed into ready information
 
 		var outgoingBody = {							//the relevant information is grabbed from the message

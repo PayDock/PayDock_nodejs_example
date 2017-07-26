@@ -10,9 +10,10 @@
             height: 300px;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
 </head>
 <body>
-	<form action="" method="post" enctype="application/x-www-form-urlencoded">
+	<form method="POST" enctype="application/x-www-form-urlencoded">
 
 		<input type="radio" name="amount" value="50"> $50<br>
 		<input type="radio" name="amount" value="100"> $100<br>
@@ -37,5 +38,23 @@
 		widget.onFinishInsert('[name="ps"]', 'payment_source');
 		widget.load();
 	</script>
+
+	<script>
+		jQuery(document).submit(function(e){
+		    var form = jQuery(e.target);
+	        var jsondata = JSON.stringify( form.serializeArray() );
+	        var jsondata2 = $.serializeObject(form);
+	        console.log(jsondata2);
+
+	        jQuery.ajax({
+	            method: "POST",
+	            url: "/", 
+	            contentType: "application/json",
+	            data: jsondata
+	        });
+	        e.preventDefault();
+		});
+	</script>
+
 </body>
 </html>
