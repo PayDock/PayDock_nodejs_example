@@ -6,7 +6,6 @@
 	"homepage": "/form.html",
 
 	"gateway_config" : [
-		"DO_NOT_CHANGE_THIS",
 		{
 			"payment_type" : "card",
 			"gateway_id" : "5968624efbe70f15089b4cda",
