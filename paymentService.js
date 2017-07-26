@@ -8,13 +8,12 @@ function acceptPost (req, res) {
 		incomingBody += data;							//the incoming message is processed for raw data
 	});
 	req.on('end', function(){
-		console.log(incomingBody);
-		var parsedBody = qs.parse(incomingBody);		//the data is then parsed into ready information
+		var parsedBody = JSON.parse(incomingBody);		//the data is then parsed into ready information
 
 		var outgoingBody = {							//the relevant information is grabbed from the message
 			"amount": parsedBody.amount,
 			"currency": parsedBody.currency,
-			"token": parsedBody.ps
+			"token": parsedBody.token
 		}
 					
 		sendCharge(outgoingBody);						//the information is then sent off in another message
@@ -34,7 +33,7 @@ function sendCharge(outgoingBody){    	  				//the destination and content for a
 		headers: {
 	      	'x-user-secret-key': SecKey
 	  	}
-	}, function(error, response){      					//once the message is sent, the response is displayed
+	}, function(error, response, body){      					//once the message is sent, the response is displayed
 		if(error) {
 			console.log(error);
 		} else {
