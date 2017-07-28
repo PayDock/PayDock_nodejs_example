@@ -73,7 +73,7 @@ function acceptPost (req, res) {
 						for (var counter in parsedResponse.resource.data[0].payment_sources) {
 							//console.log(parsedResponse.resource.data[0].payment_sources[counter]._id);
 							vaultpaymentID = parsedResponse.resource.data[0].payment_sources[counter]._id;
-							res.write(vaultpaymentID + "\n");
+							res.write(vaultpaymentID);
 						};
 						//console.log("mark vaultpaymentID");
 						res.end();

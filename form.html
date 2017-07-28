@@ -16,10 +16,12 @@
 <body>
 	<div id="vaultbuttons"></div>
 	<script>
-		var btn = document.createElement("BUTTON");
-		document.body.appendChild(btn);
-		btn.setAttribute( "onclick", "javascript: myFunction('597a88d037cce574c8d060d2');" );
-		btn.innerHTML = "Visa";
+		function createvaultbutton(payment_id) {
+			var btn = document.createElement("BUTTON");
+			document.body.appendChild(btn);
+			btn.setAttribute( "onclick", "javascript: myFunction('" + payment_id + "');" );
+			btn.innerHTML = "Visa";
+		}
 	</script>
 
 	<form id="paymentForm">
@@ -39,14 +41,14 @@
 
 	</form> 
 	
-	<button onclick="myFunctionMastercard()">Mastercard</button>
+	<button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button>
 
 	<script>
 		
 		$('#customer_id').val('597a88cf37cce574c8d060d1');
 
 		var jsonData = {
-            'customer_id' :  '597a88cf37cce574c8d060d1'
+            'customer_id' :  '597563c337cce574c8d016ad'
         };
 
 		jQuery.ajax({
@@ -56,17 +58,10 @@
             data: JSON.stringify(jsonData),
             success: function (data) {
 				console.log(data);
+				createvaultbutton(data);
 			}
         });
 
-		function myFunctionVisa() {
-			$('#ps').val('597a88d037cce574c8d060d2');
-			$('#payment_type').val('vault');
-		}
-		function myFunctionMastercard() {
-			$('#ps').val('597a88f0fd3abd105fd97d4a');
-			$('#payment_type').val('vault');
-		}
 		function myFunction(paymentid) {
 			$('#ps').val(paymentid);
 			$('#payment_type').val('vault');
