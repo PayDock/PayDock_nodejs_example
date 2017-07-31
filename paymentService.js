@@ -1,44 +1,46 @@
 var qs = require('querystring');
-var config = require('./config.json');
 var request = require('request');
+var url = require('url');
+var config = require('./config.json');
 
 function acceptPost (req, res) {
 	var incomingBody = '';
+
 	req.on('data', function(data) {
-		incomingBody += data;							//the incoming message is processed for raw data
+		incomingBody += data;									//the incoming message is processed for raw data
 	});
+
 	req.on('end', function(){
-		var parsedBody = JSON.parse(incomingBody);		//the data is then parsed into ready information
-
-		switch (parsedBody.payment_type){
-			case "vault":
-				var outgoingBody = {							//the relevant information is grabbed from the message
-					"amount": parsedBody.amount,
-					"currency": parsedBody.currency,
-					"customer_id": parsedBody.customer_id,
-					"payment_source_id": parsedBody.token
-				}
-				console.log('payment type is vault');			
-				sendCharge(outgoingBody);
-				break;
-			case "token":
-				var outgoingBody = {							//the relevant information is grabbed from the message
-					"amount": parsedBody.amount,
-					"currency": parsedBody.currency,
-					"token": parsedBody.token
-				}
-				console.log('payment type is token');			
-				sendCharge(outgoingBody);
-				break;
-			default:
-				console.log("error in payment type");
-				break;
-		}
-
-		res.write('data received \n');
+		res.writeHead(200, {'Content-Type': 'application/json'});
 		res.end();
+
+		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
+		var outgoingBody = {};
+
+		console.log("new message from: " + req.headers.origin);
+		console.log(parsedBody);
+		//console.log(parsedBody.customer_id);
+		
+
+		if (parsedBody.vault_id) {
+			outgoingBody = {
+				"amount": parsedBody.amount,
+				"currency": parsedBody.currency,
+				"customer_id": parsedBody.customer_id,				//this variable is defined from a config file for demo purposes
+				"payment_source_id": parsedBody.vault_id
+			}
+		} else {
+			outgoingBody = {									//the relevant information is grabbed from the message
+				"amount": parsedBody.amount,
+				"currency": parsedBody.currency,
+				"token": parsedBody.token
+			}
+		}
+		//console.log(outgoingBody);
+		sendCharge(outgoingBody);
 	});
 }
+
 
 function acceptVault(req, res) {
 	var incomingBody = '';
@@ -49,63 +51,69 @@ function acceptVault(req, res) {
 		req.on('end', function(){
 			var parsedBody = JSON.parse(incomingBody);
 
-			var SecKey = config.SecKey;	
+			var SecretKey = config.SecretKey;	
 			var target = "https://api-sandbox.paydock.com/v1/customers?id=" + parsedBody.customer_id;
 
-			var vaultsource = [{_id : "", schemeType : ""}];
+			var vaultsource = [];
+			//console.log(parsedBody.customer_id);
 
 			request(
 				{                                  			//a new message is initialised                
 					url: target,
 					method: 'GET',
 					headers: {
-				      	'x-user-secret-key': SecKey
+				      	'x-user-secret-key': SecretKey
 				  	}
 				},
 				function(error, response, body){      					//once the message is sent, the response is displayed
 					if(error) {
 						console.log(error);
 					} else {
+						//console.log(body);
 						var parsedResponse = JSON.parse(body);
+						//console.log(parsedResponse);
 						for (var counter in parsedResponse.resource.data[0].payment_sources) {
-							vaultsource[counter]._id.push (parsedResponse.resource.data[0].payment_sources[counter]._id);
+							//vaultsource[counter]._id.push (parsedResponse.resource.data[0].payment_sources[counter]._id);
 							try {
-								vaultsource[counter].schemeType.push (parsedResponse.resource.data[0].payment_sources[counter].card_scheme);
+								vaultsource.push ({
+									_id : parsedResponse.resource.data[0].payment_sources[counter]._id,
+									cardType : parsedResponse.resource.data[0].payment_sources[counter].card_scheme,
+									isBank : parsedResponse.resource.data[0].payment_sources[counter].type
+								});
 							} catch(err) {
-								try {
-									vaultsource[counter].schemeType.push (parsedResponse.resource.data[0].payment_sources[counter].type);
-								}
-								catch(err) {
-									console.log("too many errors");
-									throw (err);
-								}
+								throw (err);
+								console.log("too many errors");
 							}
-							console.log(vaultsource[counter]._id);
-							console.log(vaultsource[counter].schemeType);
-							res.write(vaultsource[counter]);
+							// console.log(vaultsource[counter]);
+							// console.log(vaultsource[counter].cardType);
+							// console.log(vaultsource[counter].isBank);
+							
 						};
-						res.end();
+						//res.writeHead(200,{"Content-Type":"application/json"});
+						res.write(JSON.stringify(vaultsource));
 					}
+					res.end();
 				}
 			);
 		});
 }
 
-function sendCharge(outgoingBody){    	  				//the destination and content for a new message is given to this module
-	var SecKey = config.SecKey;	
-	var target = config.target;							//the destination and authentication for a new message are loaded from the configuration file
-	request({                                  			//a new message is initialised                
+function sendCharge(outgoingBody){    	  						//the destination and content for a new message is given to this module
+	var SecretKey = config.SecretKey;	
+	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
+	request({                                  					//a new message is initialised                
+
 		url: target,
 		method: 'POST',
 		body: JSON.stringify(outgoingBody),
 		headers: {
-	      	'x-user-secret-key': SecKey
+	      	'x-user-secret-key': SecretKey
 	  	}
 	}, function(error, response, body){      					//once the message is sent, the response is displayed
 		if(error) {
 			console.log(error);
 		} else {
-			console.log(response.statusCode);
+			console.log(response.statusCode, body);
 		}
 	});
 }

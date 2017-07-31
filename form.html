@@ -17,7 +17,6 @@
 	<div id="vaultbuttons"></div>
 
 	<form id="paymentForm">
-
 		$ <input type="text" id="amount" value="50"><br>
 
 		<select id="currency">
@@ -26,19 +25,23 @@
 			<option value="GBP">British Pounds</option>
 		</select>
 
-		<input type="hidden" name="ps" id="ps" AUTOCOMPLETE="off"/>
+
+		<input type="hidden" name="token" id="token" AUTOCOMPLETE="off"/>
+		<input type="hidden" name="vault_id" id="vault_id" AUTOCOMPLETE="off"/>
 		<input type="hidden" name="customer_id" id="customer_id" AUTOCOMPLETE="off"/>
-		<input type="hidden" name="payment_type" id="payment_type" AUTOCOMPLETE="off"/>
 		<input type="submit" value="Submit">
 
 	</form> 
 
 	<div id="widget"></div>
+
 	<!-- <button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button> -->
+	<!-- <button onclick="customervault();">Use Saved payment details</button> -->
+
 	<script>
 
 
-		var test_customer_id = '597a88cf37cce574c8d060d1';
+		var test_customer_id = '59756297fd3abd105fd92938';
 		// 59756297fd3abd105fd92938 single saved payment source
 		// 597a88cf37cce574c8d060d1 four saved payment sources
 
@@ -53,37 +56,47 @@
             contentType: "application/json",
             data: JSON.stringify(jsonData),
             success: function (data) {
-				console.log(data);
-				createvaultbutton(data);
+				// console.log(data);
+
+				var parsedData = JSON.parse(data);
+
+				// console.log(parsedData[1]);
+
+				//createvaultbutton(parsedData[0]._id);
+				for (var counter in parsedData) {
+					createvaultbutton(parsedData[counter]._id);
+				}
 			}
         });
 
 		var widget = new paydock.HtmlWidget('#widget', 'b37753781812ce5dbf569029a748115506ba6219', '5968624efbe70f15089b4cda');
-		widget.onFinishInsert('[name="ps"]', 'payment_source');
+		widget.onFinishInsert('[name="token"]', 'payment_source');
 		widget.on('finish', function () {
-        	$('#payment_type').val("token");
+        	document.getElementById("vault_id").value = "";
         });
 		widget.load();
 
-		jQuery(document).submit(function(e){
+		$(document).submit(function(event){
 			postData();
-	        e.preventDefault();
+	        event.preventDefault();
 		});
 
 		function postData(){
+			console.log("now posting data");
 
             var jsonData = {
             	'amount' : $('#amount').val(),
 	            'currency' :  $('#currency').val(),
-	            'token' :  $('#ps').val(),
-	            'customer_id' :  $('#customer_id').val(),
-	            'payment_type' :  $('#payment_type').val() 
+	            'token' :  $('#token').val(),
+	            'vault_id' :  $('#vault_id').val(),
+	            'customer_id' : $('#customer_id').val()
 	        };
 
-	        jQuery.ajax({
+	        $.ajax({
 	            method: "POST",
 	            url: "/payment", 
 	            contentType: "application/json",
+	            dataType: "json",
 	            data: JSON.stringify(jsonData)
 	        });
 
@@ -97,8 +110,16 @@
 		}
 
 		function myFunction(paymentid) {
-			$('#ps').val(paymentid);
-			$('#payment_type').val('vault');
+			$('#vault_id').val(paymentid);
+			$('#token').val('');
+		}
+		function customervault(){
+			document.getElementById("vault_id").value = "597a88d037cce574c8d060d2";
+			document.getElementById("token").value = "";
+			//597a88d037cce574c8d060d2
+			//597a8991fd3abd105fd97d4d		available payment source IDs available for the demo customer
+			//597a8ae8fd3abd105fd97d51
+			//597a88f0fd3abd105fd97d4a
 		}
 	</script>
 
