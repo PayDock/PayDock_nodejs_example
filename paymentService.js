@@ -1,9 +1,6 @@
 var qs = require('querystring');
 var config = require('./config.json');
 var request = require('request');
-// TODO: customer id not sent tru its serverside only
-// TODO: choose which process to follow based on which fields are sent through
-// TODO: move sendcharge function call outside the switch
 
 function acceptPost (req, res) {
 	var incomingBody = '';
@@ -17,15 +14,20 @@ function acceptPost (req, res) {
 
 		var outgoingBody = {};
 
-		if (parsedBody.vault_id != null && parsedBody.vault_id != '') {
-			var outgoingBody = {							//the relevant information is grabbed from the message
+		if (parsedBody.vault_id != null && parsedBody.vault_id != '' && parsedBody.token != null && parsedBody.token != '') {
+			console.log("error: multiple payment types detected");
+			res.write('payment type could not be identified \n');
+			res.end();
+			return;
+		} else if (parsedBody.vault_id != null && parsedBody.vault_id != '') {
+			outgoingBody = {							//the relevant information is grabbed from the message
 				"amount": parsedBody.amount,
 				"currency": parsedBody.currency,
-				"customer_id": config.customer_id,
+				"customer_id": config.customer_id,		//this variable is defined from a config file for demo purposes
 				"payment_source_id": parsedBody.token
 			}
 		} else if (parsedBody.token != null && parsedBody.token != ''){
-			var outgoingBody = {							//the relevant information is grabbed from the message
+			outgoingBody = {							//the relevant information is grabbed from the message
 					"amount": parsedBody.amount,
 					"currency": parsedBody.currency,
 					"token": parsedBody.token
