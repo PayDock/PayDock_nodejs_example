@@ -10,13 +10,30 @@ function acceptPost (req, res) {
 	req.on('end', function(){
 		var parsedBody = JSON.parse(incomingBody);		//the data is then parsed into ready information
 
-		var outgoingBody = {							//the relevant information is grabbed from the message
-			"amount": parsedBody.amount,
-			"currency": parsedBody.currency,
-			"token": parsedBody.token
+		switch (parsedBody.payment_type){
+			case "vault":
+				var outgoingBody = {							//the relevant information is grabbed from the message
+					"amount": parsedBody.amount,
+					"currency": parsedBody.currency,
+					"customer_id": parsedBody.customer_id,
+					"payment_source_id": parsedBody.token
+				}
+				console.log('payment type is vault');			
+				sendCharge(outgoingBody);
+				break;
+			case "token":
+				var outgoingBody = {							//the relevant information is grabbed from the message
+					"amount": parsedBody.amount,
+					"currency": parsedBody.currency,
+					"token": parsedBody.token
+				}
+				console.log('payment type is token');			
+				sendCharge(outgoingBody);
+				break;
+			default:
+				console.log("error in payment type");
+				break;
 		}
-					
-		sendCharge(outgoingBody);						//the information is then sent off in another message
 
 		res.write('data received \n');
 		res.end();
