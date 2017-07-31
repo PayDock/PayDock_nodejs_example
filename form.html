@@ -25,6 +25,8 @@
 		</select>
 
 		<input type="hidden" name="ps" id="ps" AUTOCOMPLETE="off"/>
+		<input type="hidden" name="payment_type" id="payment_type" AUTOCOMPLETE="off"/>
+		<input type="hidden" name="customer_id" id="customer_id" AUTOCOMPLETE="off"/>
 		<input type="submit" value="Submit">
 
 	</form> 
@@ -34,6 +36,9 @@
 	<script>
 		var widget = new paydock.HtmlWidget('#widget', 'b37753781812ce5dbf569029a748115506ba6219', '5968624efbe70f15089b4cda');
 		widget.onFinishInsert('[name="ps"]', 'payment_source');
+		widget.on('finish', function(){
+			document.getElementByID('#payment_type').val("token")
+		});
 		widget.load();
 
 		jQuery(document).submit(function(e){
@@ -48,7 +53,9 @@
             var jsonData = {
             	'amount' : $('#amount').val(),
 	            'currency' :  $('#currency').val(),
-	            'token' :  $('#ps').val() 
+	            'token' :  $('#ps').val(),
+	            'customer_id' :  $('#customer_id').val(),
+	            'payment_type' :  $('#payment_type').val() 
 	        };
 
 	        jQuery.ajax({
