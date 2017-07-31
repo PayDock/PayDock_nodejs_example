@@ -40,7 +40,7 @@
 	<script>
 
 
-		var test_customer_id = '59756297fd3abd105fd92938';
+		var test_customer_id = '597a88cf37cce574c8d060d1';
 		// 59756297fd3abd105fd92938 single saved payment source
 		// 597a88cf37cce574c8d060d1 four saved payment sources
 
@@ -63,7 +63,7 @@
 
 				//createvaultbutton(parsedData[0]._id);
 				for (var counter in parsedData) {
-					createvaultbutton(parsedData[counter]._id);
+					createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank);
 				}
 			}
         });
@@ -101,11 +101,15 @@
 
 		}
 
-		function createvaultbutton(payment_id) {
+		function createvaultbutton(payment_id, cardType, isBank) {
 			var btn = document.createElement("BUTTON");
 			document.body.appendChild(btn);
 			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
-			btn.innerHTML = "Visa";
+			if (isBank == "card") {
+				btn.innerHTML = cardType;
+			} else {
+				btn.innerHTML = "Bank";
+			}
 		}
 
 		function myFunction(paymentid) {
