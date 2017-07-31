@@ -11,7 +11,13 @@ http.createServer(function (req, res) {
 			displayForm(res);								//The Node server will create a webpage using the server function
 		break;
 		case "POST":
-			paymentService.acceptPost(req, res); 			//The Node server will receive a message using the receiver module
+			if (req.url == '/payment') {
+				paymentService.acceptPost(req, res); 			//The Node server will receive a message using the receiver module
+			} else if (req.url == '/vault') {
+				paymentService.acceptVault(req, res);
+			} else {
+				console.log("post destination not found");
+			}
 		break;
 	}
 }).listen(serverport);
