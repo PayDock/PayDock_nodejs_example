@@ -11,9 +11,10 @@ function example(res){
 			for (i = 0; i < config.gateway_config[foo].form_fields.length; i++) {
 				res.write("widget" + foo + ".setFormFields(['" + config.gateway_config[foo].form_fields[i] + "']);\n");
 			}
-			res.write("widget" + foo + ".onFinishInsert('[name=\"ps\"]', 'payment_source'); \nwidget" + foo + ".load();\n");
+			res.write("widget" + foo + ".onFinishInsert('[name=\"token\"]', 'payment_source'); \nwidget" + foo + ".load();\n");
+			res.write("widget" + foo + ".on('finish', function () { \n document.getElementById('vault_id').value = '';\n});\n");
 		} else {
-			res.write("//no valid gateway id found for payment source\n" + foo);
+			res.write("//no valid gateway id found for payment source " + foo + "\n");
 		}
 	}
 	res.end();

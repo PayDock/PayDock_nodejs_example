@@ -12,7 +12,7 @@ function example(target, body, SecretKey){      //the destination and content fo
       if(error) {
           console.log(error);
       } else {
-          console.log(response.statusCode);
+          console.log(response.statusCode, body);
       }
   });
 }

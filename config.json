@@ -1,14 +1,22 @@
 {
 	"target" : "https://api-sandbox.paydock.com/v1/charges",
+
 	"SecretKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
 	"PublicKey" : "b37753781812ce5dbf569029a748115506ba6219",
 	"serverport": "8080",
 	"homepage": "/form.html",
+	"customer_id": "597a88cf37cce574c8d060d1",
+
+	"braintree Gid": "5968624efbe70f15089b4cda",
+	"payway Gid": "596d58668447ab5aba4bf967",
+	"merchant warrior bank Gid" : "597eb82ff17b7f715f95053f",
+	"paypal express Gid": "5976c7be37cce574c8d0215c",
+
 
 	"gateway_config" : [
 		{
 			"payment_type" : "card",
-			"gateway_id" : "5968624efbe70f15089b4cda",
+			"gateway_id" : "",
 			"form_fields" : [
 				"email"
 			]
@@ -16,15 +24,24 @@
 		{
 			"payment_type" : "bank_account",
 			"gateway_id" : "596d58668447ab5aba4bf967",
-			"form_fields" : ["account_name",
+			"form_fields" : [
+				"type",
+				"account_name",
+				"account_number",
+				"address_postcode",
 				"account_routing",
+				"account_type",
 				"account_holder_type",
-				"account_bank_name"
+				"account_bank_name",
+				"address_country",
+				"address_state",
+				"address_city",
+				"address_postcode"
 			]
 		},		
 		{
 			"payment_type" : "checkout",
-			"gateway_id" : "5976c7be37cce574c8d0215c",
+			"gateway_id" : "",
 			"form_fields" : [
 				""
 			]
