@@ -1,7 +1,6 @@
 var qs = require('querystring');
 var request = require('request');
 var url = require('url');
-var async = require('async');
 var config = require('./config.json');
 
 function acceptPost (req, res) {
@@ -15,8 +14,8 @@ function acceptPost (req, res) {
 		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
 
-		debugIntoConsole("new message from: " + req.headers.origin);
-		debugIntoConsole(parsedBody);
+		debugToConsole("new message from: " + req.headers.origin);
+		debugToConsole(parsedBody);
 
 		if (parsedBody.vault_id) {
 			outgoingBody = {
@@ -33,45 +32,38 @@ function acceptPost (req, res) {
 			}
 		}
 
-		sendCharge(outgoingBody);
+		sendCharge(outgoingBody, writeResponse, res);
 	});
-
-	function sendCharge(outgoingBody){    	  						//the destination and content for a new message is given to this module
-		var SecretKey = config.SecretKey;	
-		var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
-		debugIntoConsole("sendCharge called");
-		request({                                  					//a new message is initialised                
-			url: target,
-			method: 'POST',
-			body: JSON.stringify(outgoingBody),
-			headers: {
-		      	'x-user-secret-key': SecretKey
-		  	}
-		}, function(error, response, body){      					//once the message is sent, the response is displayed
-			if(error) {
-				debugIntoConsole(error);
-			} else {
-				debugIntoConsole(response.statusCode, body);
-				return endResponse(response.statusCode);
-			}
-		});
-	}
-
-	function endResponse (messageStatusCode) {
-		debugIntoConsole(messageStatusCode);
-		res.writeHead(messageStatusCode, {'Content-Type': 'application/json'});
-		res.end();
-	}
 }
 
+function sendCharge(outgoingBody, callback, res){    	  						//the destination and content for a new message is given to this module
+	var SecretKey = config.SecretKey;	
+	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
+	debugToConsole("sendCharge called");
+	request({                                  					//a new message is initialised                
+		url: target,
+		method: 'POST',
+		body: JSON.stringify(outgoingBody),
+		headers: {
+	      	'x-user-secret-key': SecretKey
+	  	}
+	}, function(error, response, body){      					//once the message is sent, the response is displayed
+		if(error) {
+			debugToConsole(error);
+		} else {
+			debugToConsole(response.statusCode + ', ' + body);
+			callback(response.statusCode, res);
+		}
+	});
+}
 
+function writeResponse (messageStatusCode, res) {
+	res.writeHead(messageStatusCode);
+	res.end();
+}
 
-function debugIntoConsole(){
-	if (config.debugSwitch) {
-		for (var i = 0; i < arguments.length; i++) {
-    		console.log(arguments[i]);
-  		}
-	}
+function debugToConsole(message){
+	console.log(message);
 }
 
 exports.acceptPost = acceptPost;
