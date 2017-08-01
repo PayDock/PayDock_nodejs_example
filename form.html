@@ -15,8 +15,6 @@
 	<script src="widget.js" ></script>
 </head>
 <body>
-	<div id="vaultbuttons"></div>
-
 	<form id="paymentForm">
 		$ <input type="text" id="amount" value="50"><br>
 
@@ -37,6 +35,8 @@
 	<div id="widget1"></div>
 	<div id="widget2"></div>
 	<div id="widget3"></div>
+	
+	<div id="vaultbuttons"></div>
 	
 	<!-- <button onclick="customervault();">Use Saved payment details</button> -->
 	<!-- <button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button> -->
@@ -93,7 +93,7 @@
 
 		function createvaultbutton(payment_id, cardType, isBank) {
 			var btn = document.createElement("BUTTON");
-			document.body.appendChild(btn);
+			document.getElementById('vaultbuttons').appendChild(btn);
 			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
 			if (isBank == "card") {
 				btn.innerHTML = cardType;
