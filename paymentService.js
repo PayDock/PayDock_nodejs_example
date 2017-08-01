@@ -16,7 +16,6 @@ function acceptPost (req, res) {
 		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
 
-
 		debugToConsole("new message from: " + req.headers.origin);
 		debugToConsole(parsedBody);
 
@@ -61,73 +60,67 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 	});
 }
 
-function endResponse (messageStatusCode, res) {
-	debugToConsole(messageStatusCode);
-	res.writeHead(messageStatusCode, {'Content-Type': 'application/json'});
+function endResponse (messageStatusCode, res, body) {
+	//debugToConsole(messageStatusCode);
+	//debugToConsole(body);
+	//debugToConsole(JSON.stringify(body));
+	res.writeHead(messageStatusCode, {'content-type':'text/html'});
+	res.write(JSON.stringify(body));
 	res.end();
 }
 
 function acceptVault(req, res) {
 	var incomingBody = '';
-		req.on('data', function(data) {
-			incomingBody += data;							//the incoming message is processed for raw data
-			//debugToConsole("data found");
-		});
-		req.on('end', function(){
-			var parsedBody = JSON.parse(incomingBody);
+	req.on('data', function(data) {
+		incomingBody += data;							//the incoming message is processed for raw data
+		//debugToConsole("data found");
+	});
+	req.on('end', function(){
+		//debugToConsole(incomingBody);
+		var parsedBody = JSON.parse(incomingBody);
+		//debugToConsole(parsedBody);
 
-			var SecretKey = config.SecretKey;	
-			var target = "https://api-sandbox.paydock.com/v1/customers?id=" + parsedBody.customer_id;
+		var SecretKey = config.SecretKey;	
+		var target = "https://api-sandbox.paydock.com/v1/customers?id=" + parsedBody.customer_id;
 
-			var vaultsource = [];
-			//debugToConsole(parsedBody.customer_id);
-
-			request(
-				{                                  			//a new message is initialised                
-					url: target,
-					method: 'GET',
-					headers: {
-				      	'x-user-secret-key': SecretKey
-				  	}
-				},
-				function(error, response, body){      					//once the message is sent, the response is displayed
-					if(error) {
-						debugToConsole(error);
-					} else {
-						//debugToConsole(body);
-						var parsedResponse = JSON.parse(body);
-						//debugToConsole(parsedResponse);
-						for (var counter in parsedResponse.resource.data[0].payment_sources) {
-							//vaultsource[counter]._id.push (parsedResponse.resource.data[0].payment_sources[counter]._id);
-							try {
-								vaultsource.push ({
-									_id : parsedResponse.resource.data[0].payment_sources[counter]._id,
-									cardType : parsedResponse.resource.data[0].payment_sources[counter].card_scheme,
-									isBank : parsedResponse.resource.data[0].payment_sources[counter].type
-								});
-							} catch(err) {
-								throw (err);
-								debugToConsole("too many errors");
-							}
-							// debugToConsole(vaultsource[counter]);
-							// debugToConsole(vaultsource[counter].cardType);
-							// debugToConsole(vaultsource[counter].isBank);
-							
-						};
-						res.writeHead(200,{"Content-Type":"application/json"});
-						res.write(JSON.stringify(vaultsource));
-					}
-					res.end();
+		request(
+			{                                  			//a new message is initialised                
+				url: target,
+				method: 'GET',
+				headers: {
+					'x-user-secret-key': SecretKey
 				}
-			);
-		});
+			},
+			function(error, response, body){      					//once the message is sent, the response is displayed
+				if(error) {
+					debugToConsole(error);
+					endResponse(response.statusCode, res);
+				} else {
+					returnVault(response, body, res);
+				}
+			}
+		);
+	});
 }
 
-
+function returnVault(response, body, res){
+	var vaultsource = [];
+	var parsedResponse = JSON.parse(body);
+	for (var counter in parsedResponse.resource.data[0].payment_sources) {
+		vaultsource.push ({
+			_id : parsedResponse.resource.data[0].payment_sources[counter]._id,
+			cardType : parsedResponse.resource.data[0].payment_sources[counter].card_scheme,
+			isBank : parsedResponse.resource.data[0].payment_sources[counter].type
+		});
+	}
+	//debugToConsole(vaultsource);
+	//debugToConsole(returnBody);
+	endResponse(200, res, vaultsource);
+}
 
 function debugToConsole(message){
 	if (config.debugSwitch) {
-    	debugToConsole(message);
+    	console.log(message);
 	}
 }
 

@@ -56,13 +56,10 @@
             contentType: "application/json",
             data: JSON.stringify(jsonData),
             success: function (data) {
-				// console.log(data);
-
 				var parsedData = JSON.parse(data);
-
-				// console.log(parsedData[1]);
-
-				//createvaultbutton(parsedData[0]._id);
+				//console.log(parsedData);
+				//console.log(parsedData.length);
+				//console.log(data);
 				for (var counter in parsedData) {
 					createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank);
 				}
@@ -111,6 +108,5 @@
 		}
 
 	</script>
-
 </body>
 </html>
