@@ -15,14 +15,14 @@
 	"gateway_config" : [
 		{
 			"payment_type" : "card",
-			"gateway_id" : "",
+			"gateway_id" : "5968624efbe70f15089b4cda",
 			"form_fields" : [
 				"email"
 			]
 		},		
 		{
 			"payment_type" : "bank_account",
-			"gateway_id" : "596d58668447ab5aba4bf967",
+			"gateway_id" : "",
 			"form_fields" : [
 				"type",
 				"account_name",

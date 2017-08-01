@@ -15,11 +15,11 @@ function acceptPost (req, res) {
 		res.writeHead(200, {'Content-Type': 'application/json'});
 		res.end();
 
-		console.log("new message from: " + req.headers.origin);
-		console.log(parsedBody);
-
 		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
+
+		console.log("new message from: " + req.headers.origin);
+		console.log(parsedBody);
 
 		if (parsedBody.vault_id) {
 			outgoingBody = {
@@ -54,7 +54,7 @@ function sendCharge(outgoingBody){    	  						//the destination and content for
 		if(error) {
 			console.log(error);
 		} else {
-			console.log(response.statusCode, body);
+			console.log(response.statusCode);
 		}
 	});
 }
