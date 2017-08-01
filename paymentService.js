@@ -18,8 +18,8 @@ function acceptPost (req, res) {
 		var outgoingBody = {};
 
 
-		debugIntoConsole("new message from: " + req.headers.origin);
-		debugIntoConsole(parsedBody);
+		debugToConsole("new message from: " + req.headers.origin);
+		debugToConsole(parsedBody);
 
 		if (parsedBody.vault_id) {
 			outgoingBody = {
@@ -42,7 +42,7 @@ function acceptPost (req, res) {
 	function sendCharge(outgoingBody){    	  						//the destination and content for a new message is given to this module
 		var SecretKey = config.SecretKey;	
 		var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
-		debugIntoConsole("sendCharge called");
+		debugToConsole("sendCharge called");
 		request({                                  					//a new message is initialised                
 			url: target,
 			method: 'POST',
@@ -52,16 +52,16 @@ function acceptPost (req, res) {
 		  	}
 		}, function(error, response, body){      					//once the message is sent, the response is displayed
 			if(error) {
-				debugIntoConsole(error);
+				debugToConsole(error);
 			} else {
-				debugIntoConsole(response.statusCode, body);
+				debugToConsole(response.statusCode + ', ' + body);
 				return endResponse(response.statusCode);
 			}
 		});
 	}
 
 	function endResponse (messageStatusCode) {
-		debugIntoConsole(messageStatusCode);
+		debugToConsole(messageStatusCode);
 		res.writeHead(messageStatusCode, {'Content-Type': 'application/json'});
 		res.end();
 	}
@@ -142,11 +142,9 @@ function sendCharge(outgoingBody){    	  						//the destination and content for
 		}
 	});
 
-function debugIntoConsole(){
+function debugToConsole(message){
 	if (config.debugSwitch) {
-		for (var i = 0; i < arguments.length; i++) {
-    		console.log(arguments[i]);
-  		}
+    	console.log(message);
 	}
 }
 
