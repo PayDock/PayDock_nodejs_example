@@ -10,12 +10,12 @@ function createPage(req, res){
 	}
 
 	fs.readFile("." + filename, (err, data) => {
-		if (err) {										//If the specified page isn't available, an error is created
+		if (err) {
 			res.writeHead(404, {'Content-Type': 'text/html'});
 			return res.end("404 Not Found");
 		} 
 		res.writeHead(200, {'Content-Type': 'text/html'});
-		res.end(data);									//The page is given to the user
+		res.end(data);
 	});
 }
 
@@ -38,5 +38,6 @@ function createWidget(res){
 	}
 	res.end();
 }
-exports.createWidget = createWidget;
+
 exports.createPage = createPage;
+exports.createWidget = createWidget;

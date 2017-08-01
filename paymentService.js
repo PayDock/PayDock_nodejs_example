@@ -7,12 +7,12 @@ function acceptPost (req, res) {
 	var incomingBody = '';
 
 	req.on('data', function(data) {
-		incomingBody += data;									//the incoming message is processed for raw data
+		incomingBody += data;
 	});
 
 	req.on('end', function(){
 
-		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
+		var parsedBody = JSON.parse(incomingBody);
 		var outgoingBody = {};
 
 		debugToConsole("new message from: " + req.headers.origin);
@@ -22,33 +22,32 @@ function acceptPost (req, res) {
 			outgoingBody = {
 				"amount": parsedBody.amount,
 				"currency": parsedBody.currency,
-				"customer_id": parsedBody.customer_id,				//this variable is defined from a config file for demo purposes
+				"customer_id": parsedBody.customer_id,
 				"payment_source_id": parsedBody.vault_id
 			}
 		} else {
-			outgoingBody = {									//the relevant information is grabbed from the message
+			outgoingBody = {
 				"amount": parsedBody.amount,
 				"currency": parsedBody.currency,
 				"token": parsedBody.token
 			}
 		}
-		//debugToConsole(outgoingBody);
 		sendCharge(outgoingBody, endResponse, res);
 	});
 }
 
-function sendCharge(outgoingBody, callback, res){    	  						//the destination and content for a new message is given to this module
+function sendCharge(outgoingBody, callback, res){
 	var SecretKey = config.SecretKey;	
-	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
+	var target = config.target;
 	debugToConsole("sendCharge called");
-	request({                                  					//a new message is initialised                
+	request({            
 		url: target,
 		method: 'POST',
 		body: JSON.stringify(outgoingBody),
 		headers: {
 	      	'x-user-secret-key': SecretKey
 	  	}
-	}, function(error, response, body){      					//once the message is sent, the response is displayed
+	}, function(error, response, body){
 		if(error) {
 			debugToConsole(error);
 			callback(response.statusCode, res);
@@ -60,9 +59,6 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 }
 
 function endResponse (messageStatusCode, res, body) {
-	//debugToConsole(messageStatusCode);
-	//debugToConsole(body);
-	//debugToConsole(JSON.stringify(body));
 	res.writeHead(messageStatusCode, {'content-type':'text/html'});
 	res.write(JSON.stringify(body));
 	res.end();
@@ -71,26 +67,23 @@ function endResponse (messageStatusCode, res, body) {
 function acceptVault(req, res) {
 	var incomingBody = '';
 	req.on('data', function(data) {
-		incomingBody += data;							//the incoming message is processed for raw data
-		//debugToConsole("data found");
+		incomingBody += data;
 	});
 	req.on('end', function(){
-		//debugToConsole(incomingBody);
 		var parsedBody = JSON.parse(incomingBody);
-		//debugToConsole(parsedBody);
 
 		var SecretKey = config.SecretKey;	
 		var target = "https://api-sandbox.paydock.com/v1/customers?id=" + parsedBody.customer_id;
 
 		request(
-			{                                  			//a new message is initialised                
+			{
 				url: target,
 				method: 'GET',
 				headers: {
 					'x-user-secret-key': SecretKey
 				}
 			},
-			function(error, response, body){      					//once the message is sent, the response is displayed
+			function(error, response, body){
 				if(error) {
 					debugToConsole(error);
 					endResponse(response.statusCode, res);
@@ -112,8 +105,6 @@ function returnVault(response, body, res){
 			isBank : parsedResponse.resource.data[0].payment_sources[counter].type
 		});
 	}
-	//debugToConsole(vaultsource);
-	//debugToConsole(returnBody);
 	endResponse(200, res, vaultsource);
 }
 
