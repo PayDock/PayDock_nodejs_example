@@ -9,6 +9,8 @@
 	"customer_id1source": "59756297fd3abd105fd92938",
 	"customer_id": "59756297fd3abd105fd92938",
 
+	"debugSwitch": "To disable debug messages, set this string to empty",
+
 	"braintree Gid": "5968624efbe70f15089b4cda",
 	"payway Gid": "596d58668447ab5aba4bf967",
 	"merchant warrior bank Gid" : "597eb82ff17b7f715f95053f",
