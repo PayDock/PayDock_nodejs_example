@@ -50,6 +50,7 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 	}, function(error, response, body){      					//once the message is sent, the response is displayed
 		if(error) {
 			debugToConsole(error);
+			callback(response.statusCode, res);
 		} else {
 			debugToConsole(response.statusCode + ', ' + body);
 			callback(response.statusCode, res);
