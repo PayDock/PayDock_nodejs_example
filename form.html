@@ -15,6 +15,8 @@
 	<script src="widget.js" ></script>
 </head>
 <body>
+	<div id="vaultbuttons"></div>
+
 	<form id="paymentForm">
 		$ <input type="text" id="amount" value="50"><br>
 
@@ -24,8 +26,10 @@
 			<option value="GBP">British Pounds</option>
 		</select>
 
+
 		<input type="hidden" name="token" id="token" AUTOCOMPLETE="off"/>
 		<input type="hidden" name="vault_id" id="vault_id" AUTOCOMPLETE="off"/>
+		<input type="hidden" name="customer_id" id="customer_id" AUTOCOMPLETE="off"/>
 		<input type="submit" value="Submit">
 
 	</form> 
@@ -34,9 +38,36 @@
 	<div id="widget2"></div>
 	<div id="widget3"></div>
 	
-	<button onclick="customervault();">Use Saved payment details</button>
-
+	<!-- <button onclick="customervault();">Use Saved payment details</button> -->
+	<!-- <button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button> -->
 	<script>
+		var test_customer_id = '597a88cf37cce574c8d060d1';
+		// 59756297fd3abd105fd92938 single saved payment source
+		// 597a88cf37cce574c8d060d1 four saved payment sources
+
+		$('#customer_id').val(test_customer_id);
+		var jsonData = {
+            'customer_id' :  test_customer_id
+        };
+
+		jQuery.ajax({
+            method: "POST",
+            url: "/vault", 
+            contentType: "application/json",
+            data: JSON.stringify(jsonData),
+            success: function (data) {
+				// console.log(data);
+
+				var parsedData = JSON.parse(data);
+
+				// console.log(parsedData[1]);
+
+				//createvaultbutton(parsedData[0]._id);
+				for (var counter in parsedData) {
+					createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank);
+				}
+			}
+        });
 
 		$(document).submit(function(event){
 			postData();
@@ -44,14 +75,14 @@
 		});
 
 		function postData(){
-
-		    var form = $('#paymentForm');
+			console.log("now posting data");
 
             var jsonData = {
             	'amount' : $('#amount').val(),
 	            'currency' :  $('#currency').val(),
 	            'token' :  $('#token').val(),
 	            'vault_id' :  $('#vault_id').val(),
+	            'customer_id' : $('#customer_id').val()
 	        };
 
 	        $.ajax({
@@ -64,14 +95,22 @@
 
 		}
 
-		function customervault(){
-			document.getElementById("vault_id").value = "597a88d037cce574c8d060d2";
-			document.getElementById("token").value = "";
-			//597a88d037cce574c8d060d2
-			//597a8991fd3abd105fd97d4d		available payment source IDs available for the demo customer
-			//597a8ae8fd3abd105fd97d51
-			//597a88f0fd3abd105fd97d4a
+		function createvaultbutton(payment_id, cardType, isBank) {
+			var btn = document.createElement("BUTTON");
+			document.body.appendChild(btn);
+			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
+			if (isBank == "card") {
+				btn.innerHTML = cardType;
+			} else {
+				btn.innerHTML = "Bank";
+			}
 		}
+
+		function myFunction(paymentid) {
+			$('#vault_id').val(paymentid);
+			$('#token').val('');
+		}
+
 	</script>
 
 </body>

@@ -3,8 +3,11 @@
 	"SecretKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
 	"PublicKey" : "b37753781812ce5dbf569029a748115506ba6219",
 	"serverport": "8080",
+
 	"homepage": "/form.html",
-	"customer_id": "597a88cf37cce574c8d060d1",
+	"customer_id4sources": "597a88cf37cce574c8d060d1",
+	"customer_id1source": "59756297fd3abd105fd92938",
+	"customer_id": "59756297fd3abd105fd92938",
 
 	"braintree Gid": "5968624efbe70f15089b4cda",
 	"payway Gid": "596d58668447ab5aba4bf967",
