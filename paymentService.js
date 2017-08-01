@@ -63,7 +63,9 @@ function writeResponse (messageStatusCode, res) {
 }
 
 function debugToConsole(message){
-	console.log(message);
+	if (config.debugSwitch) {
+		console.log(message);
+	}
 }
 
 exports.acceptPost = acceptPost;
