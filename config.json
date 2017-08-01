@@ -1,6 +1,5 @@
 {
 	"target" : "https://api-sandbox.paydock.com/v1/charges",
-
 	"SecretKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
 	"PublicKey" : "b37753781812ce5dbf569029a748115506ba6219",
 	"serverport": "8080",
