@@ -1,22 +1,12 @@
-var url = require("url");
 var fs = require('fs');
 var config = require('./config.json');
-var createWidget = require('./createWidget.js');
 
 function createPage(req, res){
-	var q = url.parse(req.url, true);
-	var filename = q.pathname;
 	
-	switch (filename) {
-		case '/widget.js':								//If the server detects a request for a widget...
-			createWidget.example(res);					//...then a function is called to serve the code for that widget
-		break;
-		case '/':
-			var filename = config.homepage;				//the default page is chosen from the configuration file
-		break;
-		default:
-			var filename = q.pathname;					//or, a specified page is chosen instead
-		break;
+	if (req.url == '/') {
+		filename = config.homepage;
+	} else {
+		filename = req.url;
 	}
 
 	fs.readFile("." + filename, (err, data) => {
@@ -24,7 +14,29 @@ function createPage(req, res){
 			res.writeHead(404, {'Content-Type': 'text/html'});
 			return res.end("404 Not Found");
 		} 
+		res.writeHead(200, {'Content-Type': 'text/html'});
 		res.end(data);									//The page is given to the user
 	});
 }
+
+function createWidget(res){
+	res.writeHead(200, {
+		'Content-Type': 'text/javascript'
+	});
+	for (foo = 0; foo < config.gateway_config.length; foo++) {
+		var div_id = foo + 1;
+		if (config.gateway_config[foo].gateway_id.length == 24) {
+			res.write("var widget" + foo + " = new paydock.HtmlWidget('#widget" + div_id + "', '" + config.PublicKey + "', '" + config.gateway_config[foo].gateway_id + "', '" + config.gateway_config[foo].payment_type + "');\n");
+			for (i = 0; i < config.gateway_config[foo].form_fields.length; i++) {
+				res.write("widget" + foo + ".setFormFields(['" + config.gateway_config[foo].form_fields[i] + "']);\n");
+			}
+			res.write("widget" + foo + ".onFinishInsert('[name=\"token\"]', 'payment_source'); \nwidget" + foo + ".load();\n");
+			res.write("widget" + foo + ".on('finish', function () { \n document.getElementById('vault_id').value = '';\n});\n");
+		} else {
+			res.write("//no valid gateway id found for payment source " + foo + "\n");
+		}
+	}
+	res.end();
+}
+exports.createWidget = createWidget;
 exports.createPage = createPage;

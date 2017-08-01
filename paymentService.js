@@ -1,6 +1,5 @@
 var qs = require('querystring');
 var request = require('request');
-var SendPost = require('./sendpost');
 var url = require('url');
 var config = require('./config.json');
 

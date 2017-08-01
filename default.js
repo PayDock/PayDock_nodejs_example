@@ -5,22 +5,30 @@ var server = require('./server');
 var paymentService = require('./paymentService');
 var config = require('./config.json');
 
-var serverport = config.serverport; //loads the serverport variable from the configuration file
+var serverport = config.serverport; 				//loads the serverport variable from the configuration file
 
 http.createServer(function (req, res) {
-	switch (req.method) {
-		case "GET":
-			server.createPage(req, res);	//The Node server will create a webpage using the server module
-		break;
-		case "POST":
-			if (req.url == '/payment') {
-				paymentService.acceptPost(req, res); 			//The Node server will receive a message using the receiver module
-			} else if (req.url == '/vault') {
-				paymentService.acceptVault(req, res);
-			} else {
-				console.log("post destination not found");
-			}
-		break;
+/* 	if (req.method == "GET") {
+		server.createPage(req, res);			//The Node server will create a webpage using the server module
+		if (req.url == '/widget.js') {
+			server.createWidget(res); 			//The Node server will receive a message using the receiver module
+		} else {
+			server.createPage(req, res);
+		}
+	} else if (req.method == "POST") {
+		if (req.url == '/payment') {
+			paymentService.acceptPost(req, res); 			//The Node server will receive a message using the receiver module
+		} else if (req.url == '/vault') {
+			paymentService.acceptVault(req, res);
+		} else {
+			console.log("post destination not found");
+		}
+	} */
+	switch (req.url) {
+		case "/vault": paymentService.acceptVault(req, res); break;
+		case "/payment": paymentService.acceptPost(req, res); break;
+		case "/widget.js": server.createWidget(res); break;
+		default: server.createPage(req, res); break;
 	}
 }).listen(serverport);
 
