@@ -3,26 +3,14 @@
 	"SecretKey" : "3160c5cf95577de7916454509fe5e33a31f74bb3",
 	"PublicKey" : "b37753781812ce5dbf569029a748115506ba6219",
 	"serverport": "8080",
-
 	"homepage": "/form.html",
-	"customer_id4sources": "597a88cf37cce574c8d060d1",
-	"customer_id1source": "59756297fd3abd105fd92938",
-	"customer_id": "59756297fd3abd105fd92938",
-
 	"debugSwitch": "To disable debug messages, set this string to empty",
-
-	"braintree Gid": "5968624efbe70f15089b4cda",
-	"payway Gid": "596d58668447ab5aba4bf967",
-	"merchant warrior bank Gid" : "597eb82ff17b7f715f95053f",
-	"paypal express Gid": "5976c7be37cce574c8d0215c",
-
 
 	"gateway_config" : [
 		{
 			"payment_type" : "card",
 			"gateway_id" : "5968624efbe70f15089b4cda",
 			"form_fields" : [
-				"email"
 			]
 		},		
 		{
@@ -40,7 +28,8 @@
 				"address_country",
 				"address_state",
 				"address_city",
-				"address_postcode"
+				"address_postcode",
+				"email"
 			]
 		},		
 		{
@@ -50,5 +39,28 @@
 				""
 			]
 		}
+	],
+
+	"README": "The following is a list of available[",
+	"customer_id4sources": "597a88cf37cce574c8d060d1",
+	"customer_id1source": "59756297fd3abd105fd92938",
+	"braintree Gid": "5968624efbe70f15089b4cda",
+	"payway Gid": "596d58668447ab5aba4bf967",
+	"merchant warrior bank Gid" : "597eb82ff17b7f715f95053f",
+	"paypal express Gid": "5976c7be37cce574c8d0215c",
+	"available form fields": [
+		"type",
+		"account_name",
+		"account_number",
+		"address_postcode",
+		"account_routing",
+		"account_type",
+		"account_holder_type",
+		"account_bank_name",
+		"address_country",
+		"address_state",
+		"address_city",
+		"address_postcode",
+		"email"
 	]
 }

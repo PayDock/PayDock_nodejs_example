@@ -75,7 +75,6 @@
 		});
 
 		function postData(){
-			console.log("now posting data");
 
             var jsonData = {
             	'amount' : $('#amount').val(),
@@ -106,7 +105,7 @@
 			}
 		}
 
-		function myFunction(paymentid) {
+		function selectFromVault(paymentid) {
 			$('#vault_id').val(paymentid);
 			$('#token').val('');
 		}

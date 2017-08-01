@@ -2,7 +2,6 @@ var qs = require('querystring');
 var request = require('request');
 var SendPost = require('./sendpost');
 var url = require('url');
-var async = require('async');
 var config = require('./config.json');
 
 function acceptPost (req, res) {
@@ -35,12 +34,12 @@ function acceptPost (req, res) {
 				"token": parsedBody.token
 			}
 		}
-		//console.log(outgoingBody);
-		sendCharge(outgoingBody, res);
+		//debugToConsole(outgoingBody);
+		sendCharge(outgoingBody, endResponse, res);
 	});
 }
 
-function sendCharge(outgoingBody, callback){    	  						//the destination and content for a new message is given to this module
+function sendCharge(outgoingBody, callback, res){    	  						//the destination and content for a new message is given to this module
 	var SecretKey = config.SecretKey;	
 	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
 	debugToConsole("sendCharge called");
@@ -54,6 +53,7 @@ function sendCharge(outgoingBody, callback){    	  						//the destination and c
 	}, function(error, response, body){      					//once the message is sent, the response is displayed
 		if(error) {
 			debugToConsole(error);
+			callback(response.statusCode, res);
 		} else {
 			debugToConsole(response.statusCode + ', ' + body);
 			callback(response.statusCode, res);
@@ -71,7 +71,7 @@ function acceptVault(req, res) {
 	var incomingBody = '';
 		req.on('data', function(data) {
 			incomingBody += data;							//the incoming message is processed for raw data
-			//console.log("data found");
+			//debugToConsole("data found");
 		});
 		req.on('end', function(){
 			var parsedBody = JSON.parse(incomingBody);
@@ -80,7 +80,7 @@ function acceptVault(req, res) {
 			var target = "https://api-sandbox.paydock.com/v1/customers?id=" + parsedBody.customer_id;
 
 			var vaultsource = [];
-			//console.log(parsedBody.customer_id);
+			//debugToConsole(parsedBody.customer_id);
 
 			request(
 				{                                  			//a new message is initialised                
@@ -92,11 +92,11 @@ function acceptVault(req, res) {
 				},
 				function(error, response, body){      					//once the message is sent, the response is displayed
 					if(error) {
-						console.log(error);
+						debugToConsole(error);
 					} else {
-						//console.log(body);
+						//debugToConsole(body);
 						var parsedResponse = JSON.parse(body);
-						//console.log(parsedResponse);
+						//debugToConsole(parsedResponse);
 						for (var counter in parsedResponse.resource.data[0].payment_sources) {
 							//vaultsource[counter]._id.push (parsedResponse.resource.data[0].payment_sources[counter]._id);
 							try {
@@ -107,14 +107,14 @@ function acceptVault(req, res) {
 								});
 							} catch(err) {
 								throw (err);
-								console.log("too many errors");
+								debugToConsole("too many errors");
 							}
-							// console.log(vaultsource[counter]);
-							// console.log(vaultsource[counter].cardType);
-							// console.log(vaultsource[counter].isBank);
+							// debugToConsole(vaultsource[counter]);
+							// debugToConsole(vaultsource[counter].cardType);
+							// debugToConsole(vaultsource[counter].isBank);
 							
 						};
-						//res.writeHead(200,{"Content-Type":"application/json"});
+						res.writeHead(200,{"Content-Type":"application/json"});
 						res.write(JSON.stringify(vaultsource));
 					}
 					res.end();
@@ -123,28 +123,11 @@ function acceptVault(req, res) {
 		});
 }
 
-function sendCharge(outgoingBody){    	  						//the destination and content for a new message is given to this module
-	var SecretKey = config.SecretKey;	
-	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
-	request({                                  					//a new message is initialised                
 
-		url: target,
-		method: 'POST',
-		body: JSON.stringify(outgoingBody),
-		headers: {
-	      	'x-user-secret-key': SecretKey
-	  	}
-	}, function(error, response, body){      					//once the message is sent, the response is displayed
-		if(error) {
-			console.log(error);
-		} else {
-			console.log(response.statusCode, body);
-		}
-	});
 
 function debugToConsole(message){
 	if (config.debugSwitch) {
-    	console.log(message);
+    	debugToConsole(message);
 	}
 }
 
