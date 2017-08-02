@@ -15,8 +15,6 @@
 	<script src="widget.js" ></script>
 </head>
 <body>
-	<div id="vaultbuttons"></div>
-
 	<form id="paymentForm">
 		$ <input type="text" id="amount" value="50"><br>
 
@@ -38,10 +36,12 @@
 	<div id="widget2"></div>
 	<div id="widget3"></div>
 	
+	<div id="vaultbuttons"></div>
+	
 	<!-- <button onclick="customervault();">Use Saved payment details</button> -->
 	<!-- <button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button> -->
 	<script>
-		var test_customer_id = '59756297fd3abd105fd92938';
+		var test_customer_id = '597a88cf37cce574c8d060d1';
 		// 59756297fd3abd105fd92938 single saved payment source
 		// 597a88cf37cce574c8d060d1 four saved payment sources
 
@@ -56,13 +56,10 @@
             contentType: "application/json",
             data: JSON.stringify(jsonData),
             success: function (data) {
-				// console.log(data);
-
 				var parsedData = JSON.parse(data);
-
-				// console.log(parsedData[1]);
-
-				//createvaultbutton(parsedData[0]._id);
+				//console.log(parsedData);
+				//console.log(parsedData.length);
+				//console.log(data);
 				for (var counter in parsedData) {
 					createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank);
 				}
@@ -96,7 +93,7 @@
 
 		function createvaultbutton(payment_id, cardType, isBank) {
 			var btn = document.createElement("BUTTON");
-			document.body.appendChild(btn);
+			document.getElementById('vaultbuttons').appendChild(btn);
 			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
 			if (isBank == "card") {
 				btn.innerHTML = cardType;
@@ -111,6 +108,5 @@
 		}
 
 	</script>
-
 </body>
 </html>
