@@ -114,7 +114,7 @@ function acceptVault(req, res) {
 							// debugToConsole(vaultsource[counter].isBank);
 							
 						};
-						res.writeHead(200,{"Content-Type":"application/json"});
+						res.writeHead(200);
 						res.write(JSON.stringify(vaultsource));
 					}
 					res.end();
