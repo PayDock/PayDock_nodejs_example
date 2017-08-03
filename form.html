@@ -9,6 +9,35 @@
             width: 100%;
 			height: 300px;
         }
+		div#vaultbuttons{
+			width: 400px;
+			background-color: rgb(249, 249, 249);
+			
+		}
+		div#vaultbuttons button {
+			width: 100%;
+			text-align: center;
+			font-family: sans-serif;
+			color: rgb(249, 249, 249);
+			background-color: rgb(35, 178, 165);
+			padding: 9px 12px;
+			font-size: 14px;
+			letter-spacing: .7px;
+			min-width: 112px;
+			border: none;
+			display: inline-block;
+			margin-bottom: 0;
+			font-weight: normal;
+			vertical-align: middle;
+			touch-action: manipulation;
+			cursor: pointer;
+			white-space: nowrap;
+			line-height: 1.42857143;
+			border-radius: 0;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
     </style>
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script src="https://app-sandbox.paydock.com/v1/widget.umd.js" ></script>
@@ -24,7 +53,6 @@
 			<option value="GBP">British Pounds</option>
 		</select>
 
-
 		<input type="hidden" name="token" id="token" AUTOCOMPLETE="off" value=""/>
 		<input type="hidden" name="vault_id" id="vault_id" AUTOCOMPLETE="off" value=""/>
 		<input type="hidden" name="customer_id" id="customer_id" AUTOCOMPLETE="off" value=""/>
@@ -38,48 +66,51 @@
 	
 	<div id="vaultbuttons"></div>
 	
-	<!-- <button onclick="customervault();">Use Saved payment details</button> -->
-	<!-- <button onclick="myFunction('597a88f0fd3abd105fd97d4a')">Mastercard</button> -->
 	<script>
 		var test_customer_id = '597a88cf37cce574c8d060d1';
 		// 59756297fd3abd105fd92938 single saved payment source
 		// 597a88cf37cce574c8d060d1 four saved payment sources
-
 		$('#customer_id').val(test_customer_id);
-		var jsonData = {
-            'customer_id' :  test_customer_id
-        };
-
-		jQuery.ajax({
-            method: "POST",
-            url: "/vault", 
-            contentType: "application/json",
-            data: JSON.stringify(jsonData),
-            success: function (data) {
-				var parsedData = JSON.parse(data);
-				//console.log(parsedData);
-				//console.log(parsedData.length);
-				//console.log(data);
-				for (var counter in parsedData) {
-					createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank);
+		
+		getVault();
+		
+		function getVault(){
+			var jsonData = {
+				'customer_id' :  $('#customer_id').val()
+			};
+			jQuery.ajax({
+				method: "POST",
+				url: "/vault", 
+				contentType: "application/json",
+				data: JSON.stringify(jsonData),
+				success: function (data) {
+					var parsedData = JSON.parse(data);
+					for (var counter in parsedData) {
+						createvaultbutton(parsedData[counter]._id, parsedData[counter].cardType, parsedData[counter].isBank, parsedData[counter].last4);
+					}
 				}
-			}
-        });
+			});
+		}
 
+		function createvaultbutton(payment_id, cardType, isBank, last4) {
+			var btn = document.createElement("BUTTON");
+			document.getElementById('vaultbuttons').appendChild(btn);
+			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
+			if (isBank == "card") {
+				btn.innerHTML = cardType + " ending in " + last4;
+			} else {
+				btn.innerHTML = "Bank";
+			}
+		}
+		
 		$(document).submit(function(event){
 			postData();
 	        event.preventDefault();
 		});
-
+		
 		function postData(){
-
-            var jsonData = {
-            	'amount' : $('#amount').val(),
-	            'currency' :  $('#currency').val(),
-	            'token' :  $('#token').val(),
-	            'vault_id' :  $('#vault_id').val(),
-	            'customer_id' : $('#customer_id').val()
-	        };
+			
+			var jsonData = $('#paymentForm').serializeArray();
 
 	        $.ajax({
 	            method: "POST",
@@ -89,17 +120,6 @@
 	            data: JSON.stringify(jsonData)
 	        });
 
-		}
-
-		function createvaultbutton(payment_id, cardType, isBank) {
-			var btn = document.createElement("BUTTON");
-			document.getElementById('vaultbuttons').appendChild(btn);
-			btn.setAttribute( "onclick", "javascript: selectFromVault('" + payment_id + "');" );
-			if (isBank == "card") {
-				btn.innerHTML = cardType;
-			} else {
-				btn.innerHTML = "Bank";
-			}
 		}
 
 		function selectFromVault(paymentid) {

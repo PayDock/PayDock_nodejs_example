@@ -101,10 +101,15 @@ function returnVault(response, body, res){
 	var vaultsource = [];
 	var parsedResponse = JSON.parse(body);
 	for (var counter in parsedResponse.resource.data[0].payment_sources) {
+		var pointer = parsedResponse.resource.data[0].payment_sources[counter];
+		if (pointer.card_scheme){
+			var cardTypeInUC = pointer.card_scheme.charAt(0).toUpperCase() + pointer.card_scheme.slice(1);
+		}
 		vaultsource.push ({
-			_id : parsedResponse.resource.data[0].payment_sources[counter]._id,
-			cardType : parsedResponse.resource.data[0].payment_sources[counter].card_scheme,
-			isBank : parsedResponse.resource.data[0].payment_sources[counter].type
+			_id : pointer._id,
+			cardType : cardTypeInUC,
+			last4 : pointer.card_number_last4,
+			isBank : pointer.type
 		});
 	}
 	endResponse(200, res, vaultsource);
