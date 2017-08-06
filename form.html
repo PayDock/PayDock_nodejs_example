@@ -45,9 +45,9 @@
 </head>
 <body>
 	<form id="paymentForm">
-		$ <input type="text" id="amount" value="50"><br>
+		$ <input name="amount" type="text" id="amount" value="50"><br>
 
-		<select id="currency">
+		<select name="currency"currency">
 			<option value="AUD">Australian Dollars</option>
 			<option value="USD">American Dollars</option>
 			<option value="GBP">British Pounds</option>
@@ -73,6 +73,8 @@
 		$('#customer_id').val(test_customer_id);
 		
 		getVault();
+		
+
 		
 		function getVault(){
 			var jsonData = {
@@ -109,24 +111,34 @@
 		});
 		
 		function postData(){
-			
-			var jsonData = $('#paymentForm').serializeArray();
+			var jsonData = formToStringedObject($('#paymentForm').serializeArray());
 
 	        $.ajax({
 	            method: "POST",
 	            url: "/payment", 
 	            contentType: "application/json",
 	            dataType: "json",
-	            data: JSON.stringify(jsonData)
+	            data: jsonData
 	        });
-
 		}
+		
+		function formToStringedObject(targetArray) {
+			var resultString = "{";
+			for (var counter in targetArray) {
+				if (counter >= 1) {
+					resultString += ", ";
+				}
+				resultString += '"' + targetArray[counter].name + '": "' + targetArray[counter].value + '"';
+			}
+			resultString += "}";
 
+			return resultString;
+		}
+		
 		function selectFromVault(paymentid) {
 			$('#vault_id').val(paymentid);
 			$('#token').val('');
 		}
-
 	</script>
 </body>
 </html>

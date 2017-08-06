@@ -11,7 +11,6 @@ function acceptPost (req, res) {
 	});
 
 	req.on('end', function(){
-
 		var parsedBody = JSON.parse(incomingBody);
 		var outgoingBody = {};
 
@@ -39,7 +38,8 @@ function acceptPost (req, res) {
 function sendCharge(outgoingBody, callback, res){
 	var SecretKey = config.SecretKey;	
 	var target = config.target;
-	debugToConsole("sendCharge called");
+	debugToConsole("");
+	debugToConsole("Response from PayDock Server:");
 	request({            
 		url: target,
 		method: 'POST',
@@ -51,15 +51,20 @@ function sendCharge(outgoingBody, callback, res){
 		if(error) {
 			debugToConsole(error);
 			callback(response.statusCode, res);
-		} else {
+		} else  if (response.statusCode >= 400){
+			debugToConsole("Error in request");
 			debugToConsole(response.statusCode + ', ' + body);
+			callback(response.statusCode, res, body);
+		} else {
+			var parsedBody = JSON.parse(body);
+			debugToConsole(parsedBody.resource.data.transactions[0]);
 			callback(response.statusCode, res);
 		}
 	});
 }
 
-function endResponse (messageStatusCode, res, body) {
-	res.writeHead(messageStatusCode, {'content-type':'text/html'});
+function endResponse (StatusCode, res, body) {
+	res.writeHead(StatusCode, {'content-type':'text/html'});
 	if (body) {
 		res.write(JSON.stringify(body));
 	}
@@ -112,7 +117,7 @@ function returnVault(response, body, res){
 			isBank : pointer.type
 		});
 	}
-	endResponse(200, res, vaultsource);
+	endResponse(response.statusCode, res, vaultsource);
 }
 
 function debugToConsole(message){
