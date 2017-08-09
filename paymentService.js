@@ -11,7 +11,8 @@ function acceptPost (req, res) {
 	req.on('end', function(){
 		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
-
+		
+		debugToConsole("");
 		debugToConsole("new message from: " + req.headers.origin);
 		debugToConsole(parsedBody);
 
@@ -37,7 +38,6 @@ function acceptPost (req, res) {
 function sendCharge(outgoingBody, callback, res){    	  						//the destination and content for a new message is given to this module
 	var SecretKey = config.SecretKey;	
 	var target = config.target;									//the destination and authentication for a new message are loaded from the configuration file
-	debugToConsole("sendCharge called");
 	request({                                  					//a new message is initialised                
 		url: target,
 		method: 'POST',
@@ -45,12 +45,19 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 		headers: {
 	      	'x-user-secret-key': SecretKey
 	  	}
-	}, function(error, response, body){      					//once the message is sent, the response is displayed
+	}, function(error, response, body){
+		debugToConsole("");
+		debugToConsole("Response from PayDock");
 		if(error) {
 			debugToConsole(error);
 			callback(response.statusCode, res);
-		} else {
+		} else  if (response.statusCode >= 400){
+			debugToConsole("Error in request");
 			debugToConsole(response.statusCode + ', ' + body);
+			callback(response.statusCode, res, body);
+		} else {
+			var parsedBody = JSON.parse(body);
+			debugToConsole(parsedBody.resource.data.transactions[0]);
 			callback(response.statusCode, res);
 		}
 	});

@@ -4,7 +4,7 @@ var paymentService = require('./paymentService');
 var config = require('./config.json');
 console.log(config.debugSwitch);
 config.debugSwitch = true;
-console.log(config.debugSwitch);
+console.log("debug is " + config.debugSwitch);
 
 
 var serverport = config.serverport; 						//loads the serverport variable from the configuration file
