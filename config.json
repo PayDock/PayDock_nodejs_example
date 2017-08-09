@@ -4,5 +4,5 @@
 	"serverport": "8080",
 	"homepage": "./form.html",
 	"customer_id": "597a88cf37cce574c8d060d1",
-	"debugSwitch": "To disable debug messages, set this string to empty or false (no qoutes)"
+	"debugSwitch": ""
 }

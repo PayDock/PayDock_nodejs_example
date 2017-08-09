@@ -1,6 +1,4 @@
-var qs = require('querystring');
 var request = require('request');
-var url = require('url');
 var config = require('./config.json');
 
 function acceptPost (req, res) {

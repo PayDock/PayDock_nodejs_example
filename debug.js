@@ -2,6 +2,10 @@ var http = require('http');
 var fs = require('fs');
 var paymentService = require('./paymentService');
 var config = require('./config.json');
+console.log(config.debugSwitch);
+config.debugSwitch = true;
+console.log(config.debugSwitch);
+
 
 var serverport = config.serverport; 						//loads the serverport variable from the configuration file
 

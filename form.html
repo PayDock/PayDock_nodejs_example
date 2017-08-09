@@ -34,6 +34,7 @@
 	<button onclick="customervault();">Use Saved payment details</button>
 
 	<script>
+		//, '5968624efbe70f15089b4cda'
 		var widget = new paydock.HtmlWidget('#widget', 'b37753781812ce5dbf569029a748115506ba6219', '5968624efbe70f15089b4cda');
 		widget.onFinishInsert('[name="token"]', 'payment_source');
 		widget.on('finish', function () {
