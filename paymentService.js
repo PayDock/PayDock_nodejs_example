@@ -9,13 +9,20 @@ function acceptPost (req, res) {
 	});
 
 	req.on('end', function(){
-		var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
+
+		var parsedBody = checkJSON(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
 		
 		debugToConsole("");
 		debugToConsole("new message from: " + req.headers.origin);
-		debugToConsole(parsedBody);
-
+		if (parsedBody == false) {
+			debugToConsole("body json format is invalid/broken, discarding request");
+			writeResponse(400,res);
+			return '';
+		} else {
+			debugToConsole(parsedBody);
+		}
+		
 		if (parsedBody.vault_id) {
 			outgoingBody = {
 				"amount": parsedBody.amount,
@@ -34,6 +41,17 @@ function acceptPost (req, res) {
 		sendCharge(outgoingBody, writeResponse, res);
 	});
 }
+
+function checkJSON (testString){
+    try {
+        var testParse = JSON.parse(testString);
+        if (testParse && typeof testParse === "object") {
+            return testParse;
+        }
+    }
+    catch (e) {}
+    return false;
+};
 
 function sendCharge(outgoingBody, callback, res){    	  						//the destination and content for a new message is given to this module
 	var SecretKey = config.SecretKey;	
