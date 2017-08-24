@@ -13,20 +13,18 @@ function acceptPost (req, res) {
 		var parsedBody = checkJSON(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
 		
-		debugToConsole("new message from: " + req.headers.origin);
-		debugToConsole("");
+		debugToConsole("new message from: " + req.headers.origin, 1);
 
 		if (parsedBody == false) {
-			debugToConsole("body json format is invalid/broken, discarding request");
+			debugToConsole("body json format is invalid/broken, discarding request", 1);
 			writeResponse(400,res);
 			return '';
 		} else  {
-			debugToConsole(parsedBody);
-			debugToConsole("");
+			debugToConsole(parsedBody, 1);
 		}
 
 		if (Object.keys(parsedBody).length != 4) {
-			debugToConsole("request body has incorrect data, discarding request");
+			debugToConsole("request body has incorrect data, discarding request", 1);
 			writeResponse(400,res);
 			return '';
 		}
@@ -73,8 +71,7 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 	  	}
 	}, function(error, response, body){
 		var parsedBody = JSON.parse(body);
-		debugToConsole("Response from PayDock");
-		debugToConsole("");
+		debugToConsole("Response from PayDock", 1);
 		if(error) {
 			debugToConsole(error);
 		} else  if (response.statusCode >= 400){
@@ -82,10 +79,10 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 			debugToConsole("Error in request");
 			debugToConsole(response.statusCode);
 			debugToConsole(parsedBody.error);
-			debugToConsole(parsedBody.resource.data.transactions[0].service_logs[0].response_body);
 		} else {
 			debugToConsole(parsedBody.resource.data.transactions[0]);
 		}
+		debugToConsole('');
 		callback(response.statusCode, res);
 	});
 }
@@ -95,9 +92,12 @@ function writeResponse (messageStatusCode, res) {
 	res.end();
 }
 
-function debugToConsole(message){
+function debugToConsole(message, lines){
 	if (config.debugSwitch && (typeof message != 'undefined')) {
 		console.log(message);
+	}
+	for (i = 0; i < lines; i++) { 
+	    console.log('');
 	}
 }
 
