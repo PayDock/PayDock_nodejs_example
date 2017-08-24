@@ -18,7 +18,7 @@ http.createServer(function (req, res) {
 console.log("server running on port " + serverport);		//the server is opened, ready for use
 
 function displayForm(res){
-	    fs.readFile(config.homepage, (err, data) => {
+	fs.readFile(config.homepage, (err, data) => {
 		res.end(data);										//The page is given to the user
 	});
 }

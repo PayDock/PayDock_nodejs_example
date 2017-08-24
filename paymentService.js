@@ -13,14 +13,22 @@ function acceptPost (req, res) {
 		var parsedBody = checkJSON(incomingBody);				//the data is then parsed into ready information
 		var outgoingBody = {};
 		
-		debugToConsole("");
 		debugToConsole("new message from: " + req.headers.origin);
+		debugToConsole("");
+
 		if (parsedBody == false) {
 			debugToConsole("body json format is invalid/broken, discarding request");
 			writeResponse(400,res);
 			return '';
-		} else {
+		} else  {
 			debugToConsole(parsedBody);
+			debugToConsole("");
+		}
+
+		if (Object.keys(parsedBody).length != 4) {
+			debugToConsole("request body has incorrect data, discarding request");
+			writeResponse(400,res);
+			return '';
 		}
 		
 		if (parsedBody.vault_id) {
@@ -64,20 +72,21 @@ function sendCharge(outgoingBody, callback, res){    	  						//the destination 
 	      	'x-user-secret-key': SecretKey
 	  	}
 	}, function(error, response, body){
-		debugToConsole("");
+		var parsedBody = JSON.parse(body);
 		debugToConsole("Response from PayDock");
+		debugToConsole("");
 		if(error) {
 			debugToConsole(error);
-			callback(response.statusCode, res);
 		} else  if (response.statusCode >= 400){
+			parsedBody = JSON.parse(body);
 			debugToConsole("Error in request");
-			debugToConsole(response.statusCode + ', ' + body);
-			callback(response.statusCode, res, body);
+			debugToConsole(response.statusCode);
+			debugToConsole(parsedBody.error);
+			debugToConsole(parsedBody.resource.data.transactions[0].service_logs[0].response_body);
 		} else {
-			var parsedBody = JSON.parse(body);
 			debugToConsole(parsedBody.resource.data.transactions[0]);
-			callback(response.statusCode, res);
 		}
+		callback(response.statusCode, res);
 	});
 }
 
@@ -87,7 +96,7 @@ function writeResponse (messageStatusCode, res) {
 }
 
 function debugToConsole(message){
-	if (config.debugSwitch) {
+	if (config.debugSwitch && (typeof message != 'undefined')) {
 		console.log(message);
 	}
 }

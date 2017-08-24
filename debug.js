@@ -2,10 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var paymentService = require('./paymentService');
 var config = require('./config.json');
-console.log(config.debugSwitch);
 config.debugSwitch = true;
 console.log("debug is " + config.debugSwitch);
-
 
 var serverport = config.serverport; 						//loads the serverport variable from the configuration file
 
@@ -20,6 +18,7 @@ http.createServer(function (req, res) {
 	}
 }).listen(serverport);
 console.log("server running on port " + serverport);		//the server is opened, ready for use
+console.log("");
 
 function displayForm(res){
 	    fs.readFile(config.homepage, (err, data) => {

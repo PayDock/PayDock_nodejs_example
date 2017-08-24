@@ -34,7 +34,7 @@
 	<button onclick="customervault();">Use Saved payment details</button>
 
 	<script>
-		//, '5968624efbe70f15089b4cda'
+		// '5968624efbe70f15089b4cda'
 		var widget = new paydock.HtmlWidget('#widget', 'b37753781812ce5dbf569029a748115506ba6219', '5968624efbe70f15089b4cda');
 		widget.onFinishInsert('[name="token"]', 'payment_source');
 		widget.on('finish', function () {
@@ -67,12 +67,8 @@
 		}
 
 		function customervault(){
-			document.getElementById("vault_id").value = "597a88d037cce574c8d060d2";
+			document.getElementById("vault_id").value = "59754736fd3abd105fd927ee";
 			document.getElementById("token").value = "";
-			//597a88d037cce574c8d060d2
-			//597a8991fd3abd105fd97d4d		available payment source IDs available for the demo customer
-			//597a8ae8fd3abd105fd97d51
-			//597a88f0fd3abd105fd97d4a
 		}
 	</script>
 
