@@ -8,21 +8,50 @@ function acceptPost (req, res) {
 		incomingBody += data;									//the incoming message is processed for raw data
 	});
 
-	req.on('end', function(){
+req.on('end', function(){
+		debugToConsole("new message from: " + req.headers.origin, 1);
 		if ( checkJSON(incomingBody) ) {
-			debugToConsole("new message from: " + req.headers.origin, 1);
-			debugToConsole(parsedBody, 1);
-
 			var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
 			var outgoingBody = {};
+			var mismatches = 0;
+
+			debugToConsole(parsedBody, 1);
 			
 			Object.keys(parsedBody).forEach(function(item, index){
 				if ( config.validFields.includes(item) != true ) {
-					debugToConsole("request body has incorrect data, discarding request", 1);
-					writeResponse(400,res);
-					return '';
+					mismatches++;
 				}
 			});
+
+			if (mismatches > 0) {
+				debugToConsole("request body has incorrect keys, discarding request", 1);
+				writeResponse(400,res);
+				return '';
+			}
+
+			if ( !parsedBody.amount || !parsedBody.currency ){
+				debugToConsole('empty amount data');
+				writeResponse(400,res);
+				return '';
+			}
+
+			if ( !parsedBody.token && !parsedBody.vault_id ){
+				debugToConsole('empty customer data');
+				writeResponse(400,res);
+				return '';
+			}
+
+			if ( parsedBody.token && parsedBody.vault_id ){
+				debugToConsole('conflicting customer data');
+				writeResponse(400,res);
+				return '';
+			}
+
+			if ( !config.customer_id ){
+				debugToConsole('empty customer data');
+				writeResponse(400,res);
+				return '';
+			}
 			
 			if (parsedBody.vault_id) {
 				outgoingBody = {
