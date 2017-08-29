@@ -4,5 +4,6 @@
 	"serverport": "8080",
 	"homepage": "./form.html",
 	"customer_id": "59754735fd3abd105fd927ed",
-	"debugSwitch": ""
+	"debugSwitch": "",
+	"validFields":[ "amount", "currency", "token", "vault_id" ]
 }

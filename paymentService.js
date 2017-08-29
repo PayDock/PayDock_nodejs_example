@@ -9,50 +9,50 @@ function acceptPost (req, res) {
 	});
 
 	req.on('end', function(){
-
-		var parsedBody = checkJSON(incomingBody);				//the data is then parsed into ready information
-		var outgoingBody = {};
-		
-		debugToConsole("new message from: " + req.headers.origin, 1);
-
-		if (parsedBody == false) {
-			debugToConsole("body json format is invalid/broken, discarding request", 1);
-			writeResponse(400,res);
-			return '';
-		} else  {
+		if ( checkJSON(incomingBody) ) {
+			debugToConsole("new message from: " + req.headers.origin, 1);
 			debugToConsole(parsedBody, 1);
-		}
 
-		if (Object.keys(parsedBody).length != 4) {
-			debugToConsole("request body has incorrect data, discarding request", 1);
+			var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
+			var outgoingBody = {};
+			
+			Object.keys(parsedBody).forEach(function(item, index){
+				if ( config.validFields.includes(item) != true ) {
+					debugToConsole("request body has incorrect data, discarding request", 1);
+					writeResponse(400,res);
+					return '';
+				}
+			});
+			
+			if (parsedBody.vault_id) {
+				outgoingBody = {
+					"amount": parsedBody.amount,
+					"currency": parsedBody.currency,
+					"customer_id": config.customer_id,				//this variable is defined from a config file for demo purposes
+					"payment_source_id": parsedBody.vault_id
+				}
+			} else {
+				outgoingBody = {									//the relevant information is grabbed from the message
+					"amount": parsedBody.amount,
+					"currency": parsedBody.currency,
+					"token": parsedBody.token
+				}
+			}
+
+			sendCharge(outgoingBody, writeResponse, res);
+		} else {
+			debugToConsole('body json format is invalid/broken, discarding request', 1);
 			writeResponse(400,res);
 			return '';
 		}
-		
-		if (parsedBody.vault_id) {
-			outgoingBody = {
-				"amount": parsedBody.amount,
-				"currency": parsedBody.currency,
-				"customer_id": config.customer_id,				//this variable is defined from a config file for demo purposes
-				"payment_source_id": parsedBody.vault_id
-			}
-		} else {
-			outgoingBody = {									//the relevant information is grabbed from the message
-				"amount": parsedBody.amount,
-				"currency": parsedBody.currency,
-				"token": parsedBody.token
-			}
-		}
-
-		sendCharge(outgoingBody, writeResponse, res);
 	});
 }
 
-function checkJSON (testString){
+function checkJSON (Data){
     try {
-        var testParse = JSON.parse(testString);
-        if (testParse && typeof testParse === "object") {
-            return testParse;
+        var parsedData = JSON.parse(Data);
+        if (parsedData && typeof parsedData === "object") {
+            return true;
         }
     }
     catch (e) {}
