@@ -11,31 +11,35 @@ function acceptPost (req, res) {
 
 req.on('end', function(){
 		debugToConsole("new message from: " + req.headers.origin, 1);
-		if ( checkJSON(incomingBody) ) {
-			debugToConsole(parsedBody, 1);
-			var parsedBody = JSON.parse(incomingBody);				//the data is then parsed into ready information
-			var outgoingbody = {};
 
-			if ( checkPayload(parsedBody, 'vault_id') ) {
-				outgoingbody["vault_id"] = parsedBody.vault_id;
-				outgoingbody["customer_id"] = config.customer_id;
-			} else if ( checkPayload(parsedBody, 'token') ) {
-				outgoingbody["token"] = parsedBody.token;
-			} else {
-				debugToConsole("failed payload");
-				writeResponse(400, res);
-				return '';
-			}
-
-			outgoingbody["amount"] = parsedBody.amount;
-			outgoingbody["currency"] = parsedBody.currency;
-			
-			sendCharge(outgoingbody, writeResponse, res);
-		} else {
+		if ( !checkJSON(incomingBody) ) {
 			debugToConsole("invalid JSON");
 			writeResponse(400, res);
 			return '';
 		}
+
+		var parsedBody = JSON.parse(incomingBody);
+
+		if (!checkPayload(parsedBody)){
+			debugToConsole("failed payload");
+			writeResponse(400, res);
+			return '';
+		}
+
+		debugToConsole(parsedBody, 1);
+		var outgoingbody = {};
+
+		if ( parsedBody.token ) {
+			outgoingbody["token"] = parsedBody.token;
+		} else {
+			outgoingbody["vault_id"] = parsedBody.vault_id;
+			outgoingbody["customer_id"] = config.customer_id;
+		}
+
+		outgoingbody["amount"] = parsedBody.amount;
+		outgoingbody["currency"] = parsedBody.currency;
+		
+		sendCharge(outgoingbody, writeResponse, res);
 	});
 }
 
@@ -50,18 +54,8 @@ function checkJSON (Data){
     return false;
 };
 
-function checkPayload (payload, target){
+function checkPayload (payload){
 	var v = new Validator();
-    var vault_id_length = 0;
-    var token_length = 0;
-    
-    if (target == "token"){
-        token_length = 36;
-    } else if (target == 'vault_id'){
-        vault_id_length = 24;
-    } else {
-        return false;
-    }
     
     var schema = {
         "title": "Person",
@@ -75,12 +69,10 @@ function checkPayload (payload, target){
                 "pattern": "^[a-zA-Z]{3}$"
             },
             "token": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{"+token_length+"}$"
+                "type": "string"
             },
             "vault_id": {
-                "type": "string",
-                "pattern": "^[0-9a-fA-F]{"+vault_id_length+"}$"
+                "type": "string"
             }
         },
         "required": ["amount", "currency", "token", "vault_id"]
@@ -89,7 +81,11 @@ function checkPayload (payload, target){
         return false;
     }
 
-    if ( !(parseInt(payload.amount) > 0) ) {
+    if ( parseFloat(payload.amount) <= 0 ) {
+    	return false;
+    }
+
+    if (!payload.vault_id && !payload.token) {
     	return false;
     }
     return true;
