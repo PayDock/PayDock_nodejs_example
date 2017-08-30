@@ -4,6 +4,7 @@
   "description": "a small server to relay transactions to the paydock platform from an ecommerce site",
   "main": "default.js",
   "dependencies": {
+    "jsonschema": "^1.2.0",
     "request": "^2.81.0"
   },
   "devDependencies": {},
